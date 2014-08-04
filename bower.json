@@ -1,0 +1,20 @@
+{
+  "name": "backtick-listing",
+  "version": "0.0.0",
+  "authors": [
+    "Jamie Bliss <astronouth7303@gmail.com>"
+  ],
+  "description": "Lists known Backtick Commands",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.3.4"
+  }
+}

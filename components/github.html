@@ -1,0 +1,67 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="github-client" attributes="user clientid clientsecret token">
+  <script>
+  (function() {
+    var values = {};
+    Polymer('github-client', {
+     ready: function() {
+        // TODO: persist values in localStorage
+        for (var i = 0; i < this.attributes.length; ++i) {
+          var attr = this.attributes[i];
+          values[attr.nodeName] = attr.nodeValue;
+        }
+     }
+    });
+  })();
+  </script>
+</polymer-element>
+
+
+<polymer-element name="github-login" attributes="scope">
+  <template>
+    <github-client id="ghc"></github-client>
+    <button id="login">Login with Github</button>
+  </template>
+  <script>
+  Polymer('github-login', {
+  });
+  </script>
+</polymer-element>
+
+<!-- Same as core-ajax, but waits for login if loginRequired is given. Also uses the token if available from <github-client>. -->
+<polymer-element name="github-ajax" extends="core-ajax" attributes="loginRequired">
+  <template>
+    <github-client id="ghc" token="{{token}}"></github-client>
+  </template>
+  <script>
+  Polymer('github-ajax', {
+    loginRequired: false,
+    headersChanged: function(oldv, newv) {
+      if (this.token) {
+        newv.Authorization = "token "+this.token;
+      }
+    },
+    tokenChanged: function(oldv, newv) {
+      if (newv) {
+        this.headers.Authorization = "token "+this.token;
+      }
+      this.autoGo();
+    },
+    loginRequiredChanged: function(oldv, newv) {
+      // Only go if the restriction has been removed.
+      if (oldv && !newv)
+        this.autoGo();
+    },
+    autoGo: function() {
+      if (
+          (this.loginRequired ? this.token : true)
+         ) 
+      {
+        this.super();
+      }
+    }
+  });
+  </script>
+</polymer-element>

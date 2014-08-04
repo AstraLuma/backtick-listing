@@ -1,0 +1,41 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="github.html">
+
+<polymer-element name="backtick-command" attributes="gistid gist command">
+  <template>
+    <style>
+    :host {
+      display: block;
+    }
+    </style>
+    <github-ajax 
+      auto loginRequired
+      url="https://api.github.com/gists/{{gistid}}"
+      handleAs=json
+      response="{{gist}}"></core-ajax>
+    <template if="{{gist}}">
+      <img id="icon" src="{{command.icon}}">
+      <span id="name">{{command.name}}</span>
+      <span id="desc">{{command.description}}</span>
+      <a href="{{command.link}}">Website</a>
+      <a href="https://gist.github.com/{{gistid}}">Gist</a>
+      <span>{{gist.forks.length}} forks</span>
+      <ul>
+        <template repeat="{{fork in gist.forks}}">
+          <li><backtick-command gistid="{{fork.id}}"></backtick-command></li>
+        </template>
+      </ul>
+    </template>
+    <template if="{{!gist}}">
+      Working...
+    </template>
+  </template>
+  <script>
+  Polymer('backtick-command', {
+    gistChanged: function(_, value) {
+      this.command = JSON.parse(value.files['command.json'].content);
+    }
+  });
+  </script>
+</polymer-element>

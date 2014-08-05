@@ -83,18 +83,10 @@
   <script>
   Polymer('github-ajax', {
     loginRequired: false,
-    headersChanged: function(oldv, newv) {
-      if (this.token) {
-        newv.Authorization = "token "+this.token;
-      }
-    },
     observe: {
       '$.ghc.token': 'tokenChanged'
     },
     tokenChanged: function(oldv, newv) {
-      if (newv) {
-        this.headers.Authorization = "token "+this.token;
-      }
       this.autoGo();
     },
     loginRequiredChanged: function(oldv, newv) {
@@ -104,11 +96,18 @@
     },
     autoGo: function() {
       if (
-          (this.loginRequired ? this.token : true)
+          (this.loginRequired ? this.$.ghc.token : true)
          ) 
       {
         this.super();
       }
+    },
+    go: function() {
+      if (!this.headers) {
+        this.headers = {};
+      }
+      this.headers.Authorization = "token "+this.$.ghc.token;
+      this.super();
     }
   });
   </script>

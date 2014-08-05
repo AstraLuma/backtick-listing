@@ -60,11 +60,11 @@
             <li><span>{{gist.forks.length}} forks</span></li>
           </ul>
         </div></div>
-      <!--ul id="forks">
+      <ul id="forks">
         <template repeat="{{fork in gist.forks}}">
           <li><backtick-command gistid="{{fork.id}}"></backtick-command></li>
         </template>
-      </ul-->
+      </ul>
     </template>
     <template if="{{!gist}}">
       Working...

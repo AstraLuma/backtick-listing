@@ -13,6 +13,10 @@
       float: left;
       margin-right: 0.5em;
     }
+    #bits li {
+      display: inline;
+      padding-right: 1.5em;
+    }
     </style>
     <github-ajax 
       auto loginRequired
@@ -23,10 +27,12 @@
       <img id="icon" src="{{command.icon}}">
       <h2 id="name"><a href="{{command.link}}">{{command.name}}</a></h2>
       <div id="desc">{{command.description}}</div>
-      <a href="{{command.link}}">Website</a>
-      <a href="https://gist.github.com/{{gistid}}">Gist</a>
-      <span>{{gist.forks.length}} forks</span>
-      <ul>
+      <ul id="bits">
+        <li><a href="{{command.link}}">Website</a></li>
+        <li><a href="https://gist.github.com/{{gistid}}">Gist</a></li>
+        <li><span>{{gist.forks.length}} forks</span></li>
+      </ul>
+      <ul id="forks">
         <template repeat="{{fork in gist.forks}}">
           <li><backtick-command gistid="{{fork.id}}"></backtick-command></li>
         </template>

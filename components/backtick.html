@@ -9,13 +9,38 @@
       display: block;
     }
     #icon {
+      height: 4em;
       width: 4em;
-      float: left;
-      margin-right: 0.5em;
+    }
+    #bits {
+      margin: 0;
+      padding: 0;
     }
     #bits li {
       display: inline;
       padding-right: 1.5em;
+    }
+    h2 {
+      margin: 0;
+    }
+    #command > * {
+      border: thin solid #543f21;
+      display: inline-block;
+      padding: 0.5em;
+      height: 4em;
+      vertical-align: top;
+      background: #fbb145;
+    }
+    #command > :first-child {
+      border-top-left-radius: 1em;
+      border-bottom-left-radius: 1em;
+    }
+    #command > :last-child {
+      border-top-right-radius: 1em;
+      border-bottom-right-radius: 1em;
+    }
+    #command > .dark {
+      background: #543f21;
     }
     </style>
     <github-ajax 
@@ -24,19 +49,22 @@
       handleAs=json
       response="{{gist}}"></github-ajax>
     <template if="{{gist}}">
-      <img id="icon" src="{{command.icon}}">
-      <h2 id="name"><a href="{{command.link}}">{{command.name}}</a></h2>
-      <div id="desc">{{command.description}}</div>
-      <ul id="bits">
-        <li><a href="{{command.link}}">Website</a></li>
-        <li><a href="https://gist.github.com/{{gistid}}">Gist</a></li>
-        <li><span>{{gist.forks.length}} forks</span></li>
-      </ul>
-      <ul id="forks">
+      <div id="command"><div class="dark">
+          <img id="icon" src="{{command.icon}}">
+        </div><div>
+          <h2 id="name"><a href="{{command.link}}">{{command.name}}</a></h2>
+          <div id="desc">{{command.description}}</div>
+          <ul id="bits">
+            <li><a href="{{command.link}}">Website</a></li>
+            <li><a href="https://gist.github.com/{{gistid}}">Gist</a></li>
+            <li><span>{{gist.forks.length}} forks</span></li>
+          </ul>
+        </div></div>
+      <!--ul id="forks">
         <template repeat="{{fork in gist.forks}}">
           <li><backtick-command gistid="{{fork.id}}"></backtick-command></li>
         </template>
-      </ul>
+      </ul-->
     </template>
     <template if="{{!gist}}">
       Working...

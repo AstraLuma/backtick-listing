@@ -1,31 +1,71 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/polymer-localstorage/polymer-localstorage.html">
 
 <polymer-element name="github-client" attributes="user clientid clientsecret token">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+    <polymer-localstorage name="user" value="{{user}}"></polymer-localstorage>
+    <polymer-localstorage name="token" value="{{token}}"></polymer-localstorage>
+    <polymer-localstorage name="clientid" value="{{clientid}}"></polymer-localstorage>
+    <polymer-localstorage name="clientsecret" value="{{clientsecret}}"></polymer-localstorage>
+  </template>
   <script>
-  (function() {
-    var values = {};
-    Polymer('github-client', {
-     ready: function() {
-        // TODO: persist values in localStorage
-        for (var i = 0; i < this.attributes.length; ++i) {
-          var attr = this.attributes[i];
-          values[attr.nodeName] = attr.nodeValue;
-        }
-     }
-    });
-  })();
+    Polymer('github-client');
   </script>
 </polymer-element>
 
 
-<polymer-element name="github-login" attributes="scope">
+<polymer-element name="github-login" attributes="scope catchHref">
   <template>
-    <github-client id="ghc"></github-client>
-    <button id="login">Login with Github</button>
+    <github-client id="ghc" clientid="{{clientid}}" clientsecret="{{clientsecret}}" user="{{user}}"></github-client>
+    <paper-button id="login" icon="account-circle" label="Login with Github" raisedButton on-click="{{showLogin}}"></paper-button>
+    <!-- ICK. Replace with ProJax when I write it. -->
+    <core-ajax id="gettoken" 
+      method="POST" 
+      url="https://github.com/login/oauth/access_token" 
+      params="{{ {client_id: clientid, client_secret: clientsecret} }}"
+      headers='{"Accept": "application/json"}'
+      handleAs="json" 
+      on-core-response="{{finishToken}}">
+    <!-- This is a good use of core-ajax. We can automatically map and it works. -->
+    <!--github-ajax url="https://api.github.com/users/" auto loginRequired response="{{user}}"-->
   </template>
   <script>
   Polymer('github-login', {
+    AUTH_URL: "https://github.com/login/oauth/authorize",
+    resolveURL: function(url) {
+      var b = document.createElement("base");
+      b.href = url;
+      return b.href;
+    },
+    showLogin: function() {
+      var url = this.AUTH_URL + 
+        "?client_id=" + encodeURIComponent(this.$.ghc.clientid) +
+        "&redirect_uri=" + encodeURIComponent(this.resolveURL(this.catchHref));
+      if (this.scope) {
+        url += "&scope=" + encodeURIComponent(this.scope.split(" ").join(","));
+      }
+      window.open(url, "github-login:oauth-popup");
+      window.OauthCodeCallback = function(code) {
+        this.finishOauth(code);
+      }.bind(this);
+    },
+    finishOauth: function(code) {
+      console.debug("Finish OAuth", code);
+      this.$.gettoken.params.code = code;
+      this.$.gettoken.go();
+    },
+    finishToken: function() {
+      var info = this.$.gettoken.response;
+      this.$.ghc.token = info.token;
+      this.scope = info.scope;
+    }
   });
   </script>
 </polymer-element>
@@ -33,7 +73,12 @@
 <!-- Same as core-ajax, but waits for login if loginRequired is given. Also uses the token if available from <github-client>. -->
 <polymer-element name="github-ajax" extends="core-ajax" attributes="loginRequired">
   <template>
-    <github-client id="ghc" token="{{token}}"></github-client>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+    <github-client id="ghc"></github-client>
   </template>
   <script>
   Polymer('github-ajax', {
@@ -42,6 +87,9 @@
       if (this.token) {
         newv.Authorization = "token "+this.token;
       }
+    },
+    observe: {
+      '$.ghc.token': 'tokenChanged'
     },
     tokenChanged: function(oldv, newv) {
       if (newv) {

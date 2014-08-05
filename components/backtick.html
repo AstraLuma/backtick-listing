@@ -42,11 +42,20 @@
     #command > .dark {
       background: #543f21;
     }
+    :host(.default) #command > * {
+      background: none;
+    }
     #forks {
       padding-left: 4em;
     }
     #forks li {
       display: block;
+    }
+    :host(.lame) #command {
+      display: none;
+    }
+    :host(.lame) #forks {
+      padding-left: 0;
     }
     </style>
     <github-ajax 
@@ -80,6 +89,18 @@
   Polymer('backtick-command', {
     gistChanged: function(_, value) {
       this.command = JSON.parse(value.files['command.json'].content);
+      if (
+          value.files['command.js'].content == "/* NOTE: Comments need to be in multiline format like this, instead of \"// Comment\" */\nalert(\"Hello World\");" ||
+          value.files['command.js'].content == "alert(\"Hello World\");" ||
+          value.files['command.js'].content == "alert(\"Hello World!\");"
+        )
+      {
+        this.classList.add("default");
+      }
+      // Idiots who forgot to update their metadata.
+      if (this.command.name == "Example Command") {
+        this.classList.add("lame");
+      }
     }
   });
   </script>

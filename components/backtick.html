@@ -107,7 +107,8 @@
         this.classList.add("default");
       }
       // Somebody pasted a bookmarklet thinking it would work
-      if (value.files['command.js'].content.indexOf("javascript:") == 0) {
+      var jsi = value.files['command.js'].content.indexOf("javascript:");
+      if (jsi == 0 || jsi == 87 /*after comment*/) {
         this.classList.add("broken");
       }
       // Idiots who forgot to update their metadata.

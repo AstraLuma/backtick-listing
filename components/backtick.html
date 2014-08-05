@@ -8,16 +8,21 @@
     :host {
       display: block;
     }
+    #icon {
+      width: 4em;
+      float: left;
+      margin-right: 0.5em;
+    }
     </style>
     <github-ajax 
       auto loginRequired
       url="https://api.github.com/gists/{{gistid}}"
       handleAs=json
-      response="{{gist}}"></core-ajax>
+      response="{{gist}}"></github-ajax>
     <template if="{{gist}}">
       <img id="icon" src="{{command.icon}}">
-      <span id="name">{{command.name}}</span>
-      <span id="desc">{{command.description}}</span>
+      <h2 id="name"><a href="{{command.link}}">{{command.name}}</a></h2>
+      <div id="desc">{{command.description}}</div>
       <a href="{{command.link}}">Website</a>
       <a href="https://gist.github.com/{{gistid}}">Gist</a>
       <span>{{gist.forks.length}} forks</span>

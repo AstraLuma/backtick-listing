@@ -71,6 +71,7 @@
 </polymer-element>
 
 <!-- Same as core-ajax, but waits for login if loginRequired is given. Also uses the token if available from <github-client>. -->
+<!-- TODO: Add caching -->
 <polymer-element name="github-ajax" extends="core-ajax" attributes="loginRequired">
   <template>
     <style>

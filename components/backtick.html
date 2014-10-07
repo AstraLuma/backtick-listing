@@ -85,6 +85,7 @@
             <li><a href="{{command.link}}">Website</a></li>
             <li><a href="https://gist.github.com/{{gistid}}">Gist</a></li>
             <li><span>{{gist.forks.length}} forks</span></li>
+            <li><button on-click="{{tryit}}" title="WARNING: May be unsafe.">Try it</button></li>
           </ul>
         </div></div>
       <ul id="forks">
@@ -120,6 +121,9 @@
       if (this.command.name == "Example Command") {
         this.classList.add("lame");
       }
+    },
+    tryit: function() {
+      eval(this.gist.files['command.js'].content);
     }
   });
   </script>

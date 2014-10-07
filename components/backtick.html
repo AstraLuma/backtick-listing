@@ -42,22 +42,27 @@
     #command > .dark {
       background: #543f21;
     }
-    :host(.default) #command > * {
-      background: none;
-    }
-    :host(.broken) #command > .dark {
-      background: red; /*FIXME: A better color?*/;
-    }
-    :host(.broken) #command > * {
-      border-color: red; /*Same as the color above.*/;
-      background: none;
-    }
     #forks {
       padding-left: 4em;
     }
     #forks li {
       display: block;
     }
+    /* No actual code, just the example. */
+    :host(.default) #command {
+      display: none;
+    }
+    :host(.default) #forks {
+      padding-left: 0;
+    }
+    /* Just pasted a bookmarklet and hoped for the best */
+    :host(.broken) #command {
+      display: none;
+    }
+    :host(.broken) #forks {
+      padding-left: 0;
+    }
+    /* Probably works, but didn't bother to change the name, rendering it useless. */
     :host(.lame) #command {
       display: none;
     }

@@ -41,13 +41,35 @@
     }
     #command > .dark {
       background: #543f21;
+      color: white;
     }
+
+    #command > .dark a {
+      color: white;
+    }
+
+    #credit a {
+      text-decoration: none;
+    }
+  
+    #credit a:hover {
+      text-decoration: underline;
+    }
+
+    #credit > a > * {
+      display: block;
+    }
+    #avatar {
+      max-height: 3em;
+    }
+
     #forks {
       padding-left: 4em;
     }
     #forks li {
       display: block;
     }
+
     /* No actual code, just the example. */
     :host(.default) #command {
       display: none;
@@ -87,6 +109,11 @@
             <li><span>{{gist.forks.length}} forks</span></li>
             <li><button on-click="{{tryit}}" title="WARNING: May be unsafe.">Try it</button></li>
           </ul>
+        </div><div class="dark" id="credit">
+          <a href="{{gist.owner.html_url}}">
+            <img id="avatar" src="{{gist.owner.avatar_url}}">
+            <div>{{gist.owner.login}}</div>
+          </a>
         </div></div>
       <ul id="forks">
         <template repeat="{{fork in gist.forks}}">

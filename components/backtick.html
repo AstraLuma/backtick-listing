@@ -1,5 +1,7 @@
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/core-pages/core-pages.html">
 <link rel="import" href="github.html">
 
 <polymer-element name="backtick-command" attributes="gistid gist command">
@@ -70,6 +72,11 @@
       display: block;
     }
 
+    #details {
+      left: auto;
+      width: 40em;
+    }
+
     /* No actual code, just the example. */
     :host(.default) #command {
       display: none;
@@ -97,6 +104,18 @@
       url="https://api.github.com/gists/{{gistid}}"
       handleAs=json
       response="{{gist}}"></github-ajax>
+    <dialog id="details">
+      <paper-tabs selected="{{selected}}">
+        <paper-tab selected><tt>README.md</tt></paper-tab>
+        <paper-tab><tt>command.js</tt></paper-tab>
+        <paper-tab><tt>command.json</tt></paper-tab>
+      </paper-tabs>
+      <core-pages selected="{{selected}}">
+        <div><pre>{{gist.files['README.md'].contents}}</pre></div>
+        <div><pre>{{gist.files['command.js'].contents}}</pre></div>
+        <div><pre>{{gist.files['command.json'].contents}}</pre></div>
+      </core-pages>
+    </dialog>
     <template if="{{gist}}">
       <div id="command"><div class="dark">
           <img id="icon" src="{{command.icon}}">
@@ -107,7 +126,7 @@
             <li><a href="{{command.link}}">Website</a></li>
             <li><a href="https://gist.github.com/{{gistid}}">Gist</a></li>
             <li><span>{{gist.forks.length}} forks</span></li>
-            <li><button on-click="{{tryit}}" title="WARNING: May be unsafe.">Try it</button></li>
+            <li><button on-click="{{showDetails}}">Details</button></li>
           </ul>
         </div><div class="dark" id="credit">
           <a href="{{gist.owner.html_url}}">
@@ -149,6 +168,9 @@
       if (this.command.name == "Example Command") {
         this.classList.add("lame");
       }
+    },
+    showDetails: function() {
+      this.$.details.show();
     },
     tryit: function() {
       eval(this.gist.files['command.js'].content);

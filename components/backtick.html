@@ -106,14 +106,14 @@
       response="{{gist}}"></github-ajax>
     <dialog id="details">
       <paper-tabs selected="{{selected}}">
-        <paper-tab selected><tt>README.md</tt></paper-tab>
+        <paper-tab active><tt>README.md</tt></paper-tab>
         <paper-tab><tt>command.js</tt></paper-tab>
         <paper-tab><tt>command.json</tt></paper-tab>
       </paper-tabs>
       <core-pages selected="{{selected}}">
-        <div><pre>{{gist.files['README.md'].contents}}</pre></div>
-        <div><pre>{{gist.files['command.js'].contents}}</pre></div>
-        <div><pre>{{gist.files['command.json'].contents}}</pre></div>
+        <div><pre>{{readmemd}}</pre></div>
+        <div><pre>{{commandjs}}</pre></div>
+        <div><pre>{{commandjson}}</pre></div>
       </core-pages>
     </dialog>
     <template if="{{gist}}">
@@ -148,6 +148,12 @@
   Polymer('backtick-command', {
     gistChanged: function(_, value) {
       this.command = JSON.parse(value.files['command.json'].content);
+      if (value.files['README.md'])
+        this.readmemd = value.files['README.md'].content;
+      if (value.files['command.js'])
+        this.commandjs = value.files['command.js'].content;
+      if (value.files['command.json'])
+        this.commandjson = value.files['command.json'].content;
       // Do a bunch of checks to help users tell lame and broken commands
       // No command was written
       if (

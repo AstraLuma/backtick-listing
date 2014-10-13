@@ -106,12 +106,22 @@
       response="{{gist}}"></github-ajax>
     <dialog id="details">
       <paper-tabs selected="{{selected}}">
-        <paper-tab active><tt>README.md</tt></paper-tab>
+        <paper-tab><tt>README.md</tt></paper-tab>
         <paper-tab><tt>command.js</tt></paper-tab>
         <paper-tab><tt>command.json</tt></paper-tab>
       </paper-tabs>
-      <core-pages selected="{{selected}}">
-        <div><pre>{{readmemd}}</pre></div>
+      <core-pages selected="{{selected}}" flex>
+        <div>
+          <github-ajax
+            id="parsereadme"
+            method="POST"
+            url="https://api.github.com/markdown/raw"
+            contentType="text/x-markdown"
+            body="{{readmemd}}"
+            handleAs=text
+            response="{{readme}}"></github-ajax>
+          <div id="readmecontents"></div>
+        </div>
         <div><pre>{{commandjs}}</pre></div>
         <div><pre>{{commandjson}}</pre></div>
       </core-pages>
@@ -146,10 +156,14 @@
   </template>
   <script>
   Polymer('backtick-command', {
+    readme: "",
+    selected: 0,
     gistChanged: function(_, value) {
       this.command = JSON.parse(value.files['command.json'].content);
-      if (value.files['README.md'])
+      if (value.files['README.md']) {
         this.readmemd = value.files['README.md'].content;
+        this.$.parsereadme.go();
+      }
       if (value.files['command.js'])
         this.commandjs = value.files['command.js'].content;
       if (value.files['command.json'])
@@ -174,6 +188,9 @@
       if (this.command.name == "Example Command") {
         this.classList.add("lame");
       }
+    },
+    readmeChanged: function(_, value) {
+      this.$.readmecontents.innerHTML = value;
     },
     showDetails: function() {
       this.$.details.show();

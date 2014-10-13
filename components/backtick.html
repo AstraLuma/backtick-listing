@@ -72,11 +72,6 @@
       display: block;
     }
 
-    #details {
-      left: auto;
-      width: 40em;
-    }
-
     /* No actual code, just the example. */
     :host(.default) #command {
       display: none;
@@ -104,29 +99,8 @@
       url="https://api.github.com/gists/{{gistid}}"
       handleAs=json
       response="{{gist}}"></github-ajax>
-    <dialog id="details">
-      <paper-tabs selected="{{selected}}">
-        <paper-tab><tt>README.md</tt></paper-tab>
-        <paper-tab><tt>command.js</tt></paper-tab>
-        <paper-tab><tt>command.json</tt></paper-tab>
-      </paper-tabs>
-      <core-pages selected="{{selected}}" flex>
-        <div>
-          <github-ajax
-            id="parsereadme"
-            method="POST"
-            url="https://api.github.com/markdown/raw"
-            contentType="text/x-markdown"
-            body="{{readmemd}}"
-            handleAs=text
-            response="{{readme}}"></github-ajax>
-          <div id="readmecontents"></div>
-        </div>
-        <div><pre>{{commandjs}}</pre></div>
-        <div><pre>{{commandjson}}</pre></div>
-      </core-pages>
-    </dialog>
     <template if="{{gist}}">
+      <backtick-details-dialog id="details" gist="{{gist}}"></backtick-details-dialog>
       <div id="command"><div class="dark">
           <img id="icon" src="{{command.icon}}">
         </div><div>
@@ -160,14 +134,6 @@
     selected: 0,
     gistChanged: function(_, value) {
       this.command = JSON.parse(value.files['command.json'].content);
-      if (value.files['README.md']) {
-        this.readmemd = value.files['README.md'].content;
-        this.$.parsereadme.go();
-      }
-      if (value.files['command.js'])
-        this.commandjs = value.files['command.js'].content;
-      if (value.files['command.json'])
-        this.commandjson = value.files['command.json'].content;
       // Do a bunch of checks to help users tell lame and broken commands
       // No command was written
       if (
@@ -189,11 +155,8 @@
         this.classList.add("lame");
       }
     },
-    readmeChanged: function(_, value) {
-      this.$.readmecontents.innerHTML = value;
-    },
     showDetails: function() {
-      this.$.details.show();
+      this.shadowRoot.getElementById('details').show();
     },
     tryit: function() {
       eval(this.gist.files['command.js'].content);
@@ -201,3 +164,58 @@
   });
   </script>
 </polymer-element>
+
+<polymer-element name="backtick-details-dialog" attributes="gist">
+  <template>
+    <style>
+    #details {
+      left: auto;
+      width: 40em;
+    }
+
+    </style>
+    <dialog id="details">
+      <paper-tabs selected="{{selected}}">
+        <paper-tab><tt>README.md</tt></paper-tab>
+        <paper-tab><tt>command.js</tt></paper-tab>
+        <paper-tab><tt>command.json</tt></paper-tab>
+      </paper-tabs>
+      <core-pages selected="{{selected}}" flex>
+        <div>
+          <github-ajax
+            id="parsereadme"
+            method="POST"
+            url="https://api.github.com/markdown/raw"
+            contentType="text/x-markdown"
+            body="{{readmemd}}"
+            handleAs=text
+            response="{{readme}}"></github-ajax>
+          <div id="readmecontents"></div>
+        </div>
+        <div><pre>{{commandjs}}</pre></div>
+        <div><pre>{{commandjson}}</pre></div>
+      </core-pages>
+    </dialog>
+  </template>
+  <script>
+  Polymer('backtick-details-dialog', {
+    selected: 0,
+    readme: "",
+    gistChanged: function(_, value) {
+      if (value.files['README.md']) {
+        this.readmemd = value.files['README.md'].content;
+        this.$.parsereadme.go();
+      }
+      if (value.files['command.js'])
+        this.commandjs = value.files['command.js'].content;
+      if (value.files['command.json'])
+        this.commandjson = value.files['command.json'].content;
+    },
+    readmeChanged: function(_, value) {
+      this.$.readmecontents.innerHTML = value;
+    },
+    show: function() {
+      return this.$.details.show();
+    }
+  });
+  </script>

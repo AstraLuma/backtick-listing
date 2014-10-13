@@ -140,10 +140,11 @@
         this.classList.add("default");
       }
       // Somebody pasted a bookmarklet thinking it would work
-      var jsi = value.files['command.js'].content.indexOf("javascript:");
-      if (jsi == 0 || jsi == 87 /*after comment*/) {
+      // Apparently, this is actually ok.
+      /*var jsi = value.files['command.js'].content.indexOf("javascript:");
+      if (jsi == 0 || jsi == 87 /*after comment*//*) {
         this.classList.add("broken");
-      }
+      }*/
       // Idiots who forgot to update their metadata.
       if (this.command.name == "Example Command") {
         this.classList.add("lame");

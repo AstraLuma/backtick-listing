@@ -171,16 +171,32 @@
     #details {
       left: auto;
       width: 40em;
+      padding: 0;
+      border-radius: 1em;
+    }
+
+    paper-tabs {
+      background: #543f21;
+      color: white;
+    }
+
+    core-pages > * > * {
+      margin-left: 1em;
+      margin-right: 1em;
+    }
+    core-pages > * > *:last-child {
+      margin-bottom: 1em;
     }
 
     </style>
     <dialog id="details">
-      <paper-tabs selected="{{selected}}">
+      <paper-tabs selected="{{selected}}" id="tabs">
         <paper-tab><tt>README.md</tt></paper-tab>
         <paper-tab><tt>command.js</tt></paper-tab>
         <paper-tab><tt>command.json</tt></paper-tab>
+        <button on-click="{{close}}">Close</button>
       </paper-tabs>
-      <core-pages selected="{{selected}}" flex>
+      <core-pages selected="{{selected}}" flex id="pages">
         <div>
           <github-ajax
             id="parsereadme"
@@ -189,8 +205,11 @@
             contentType="text/x-markdown"
             body="{{readmemd}}"
             handleAs=text
-            response="{{readme}}"></github-ajax>
-          <div id="readmecontents"></div>
+            response="{{readme}}"
+            on-core-complete="{{selectedChanged}}"></github-ajax>
+          <div id="readmecontents">
+            <progress></progress>
+          </div>
         </div>
         <div><pre>{{commandjs}}</pre></div>
         <div><pre>{{commandjson}}</pre></div>
@@ -199,23 +218,38 @@
   </template>
   <script>
   Polymer('backtick-details-dialog', {
-    selected: 0,
     readme: "",
     gistChanged: function(_, value) {
       if (value.files['README.md']) {
         this.readmemd = value.files['README.md'].content;
-        this.$.parsereadme.go();
       }
       if (value.files['command.js'])
         this.commandjs = value.files['command.js'].content;
       if (value.files['command.json'])
         this.commandjson = value.files['command.json'].content;
     },
+    selectedChanged: function() {
+      window.setTimeout(function() {
+        var cheight = 0;
+        var pageitems = this.$.pages.children[this.selected].children;
+        for(var i = 0; i < pageitems.length; i++ ) {
+          cheight += pageitems[i].clientHeight;
+        }
+        cheight += this.$.tabs.clientHeight;
+        this.$.details.style.height = "calc(2em + " + cheight + "px)";
+      }.bind(this), 10)
+    },
     readmeChanged: function(_, value) {
       this.$.readmecontents.innerHTML = value;
     },
     show: function() {
+      if (!this.readme && this.readmemd)
+        this.$.parsereadme.go();
+      this.selected = 0;
       return this.$.details.show();
+    },
+    close: function() {
+      return this.$.details.close();
     }
   });
   </script>
